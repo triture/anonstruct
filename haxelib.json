@@ -1,0 +1,13 @@
+{
+  "name": "AnonStruct",
+  "url": "https://github.com/triture/anonstruct",
+  "license": "MIT",
+  "tags": [],
+  "description": "anonymous structure data validation.",
+  "version": "0.0.1",
+  "releasenote": "Experimental release",
+  "contributors": [ "triture" ],
+  "dependencies": {
+    "datetime" : ""
+  }
+}
