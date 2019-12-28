@@ -1,0 +1,8 @@
+language: haxe
+
+install:
+  - haxelib install datetime
+  - haxe anonstruct_tests.hxml
+
+script:
+  - neko build/anonstruct.n
