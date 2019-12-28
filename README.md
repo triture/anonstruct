@@ -1,3 +1,7 @@
+
+[![Build Status](https://travis-ci.org/triture/anonstruct.svg?branch=master)](https://travis-ci.org/triture/anonstruct.svg)
+
+
 # AnonStruct
 
 Structural validation for dynamic / anonymous objects at runtime.

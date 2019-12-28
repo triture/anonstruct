@@ -2,6 +2,8 @@ language: haxe
 
 install:
   - haxelib install datetime
+  - haxelib install utest
+  - haxelib dev anonstruct ./
   - haxe anonstruct_tests.hxml
 
 script:
