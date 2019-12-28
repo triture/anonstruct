@@ -56,6 +56,12 @@ class AnonStruct {
         return value;
     }
 
+    public function setObject():AnonPropObject {
+        var value:AnonPropObject = new AnonPropObject();
+        this.currentStruct = value;
+        return value;
+    }
+
 
     public function refuseNull():Void this._allowNull = false;
     public function allowNull():Void this._allowNull = true;
@@ -172,6 +178,15 @@ class AnonStruct {
             }
         }
 
+    }
+
+    public function pass(data:Dynamic):Bool {
+        try {
+            this.validate(data);
+            return true;
+        } catch(e:Dynamic) {
+            return false;
+        }
     }
 }
 

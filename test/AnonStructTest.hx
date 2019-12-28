@@ -7,6 +7,7 @@ import cases.TestBasicInt;
 import cases.TestBasicFloat;
 import cases.TestBasicBool;
 import cases.TestBasicDate;
+import cases.TestBasicObject;
 
 class AnonStructTest {
     
@@ -19,6 +20,7 @@ class AnonStructTest {
         runner.addCase(new TestBasicInt());
         runner.addCase(new TestBasicFloat());
         runner.addCase(new TestBasicBool());
+        runner.addCase(new TestBasicObject());
 
         Report.create(runner);
         runner.run();
