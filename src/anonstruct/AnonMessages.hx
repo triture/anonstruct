@@ -40,5 +40,6 @@ class AnonMessages {
     public static var FLOAT_VALUE_LESS_OR_EQUAL_THAN = "O valor deve ser menor ou igual a ?VALUE0.";
 
     public static var BOOL_VALUE_INVALID = "O Valor deve ser booleano.";
+    public static var BOOL_VALUE_EXPECTED = "O Valor esperado era ?VALUE0";
 
 }

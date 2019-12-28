@@ -20,6 +20,12 @@ class AnonStruct {
         this._validateFunc.push(func);
     }
 
+    public function setBool():AnonPropBool {
+        var value:AnonPropBool = new AnonPropBool();
+        this.currentStruct = value;
+        return value;
+    }
+
     public function setString():AnonPropString {
         var value:AnonPropString = new AnonPropString();
         this.currentStruct = value;
@@ -740,6 +746,7 @@ private class AnonPropFloat extends AnonProp {
 private class AnonPropBool extends AnonProp {
 
     private var _allowNull:Bool = false;
+    private var _expectedValue:Null<Bool>;
 
     public function new() {
         super();
@@ -755,6 +762,11 @@ private class AnonPropBool extends AnonProp {
         return this;
     }
 
+    public function expectedValue(value:Bool):AnonPropBool {
+        this._expectedValue = value;
+        return this;
+    }
+
     public function refuseNull():AnonPropBool {
         this._allowNull = false;
         return this;
@@ -765,15 +777,22 @@ private class AnonPropBool extends AnonProp {
         return this;
     }
 
-    override public function validate(value:Dynamic):Void {
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
-            if (!Std.is(value, Bool)) {
-                throw AnonMessages.BOOL_VALUE_INVALID;
-            } else {
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isBool(value:Dynamic):Bool return (Std.is(value, Bool));
+    inline private function validate_expected(value:Bool, expected:Null<Bool>):Bool return ((expected == null) || (expected != null && value == expected));
 
+    override public function validate(value:Dynamic):Void {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
+            if (!this.validate_isBool(value)) throw AnonMessages.BOOL_VALUE_INVALID;
+            else {
                 var val:Bool = cast value;
+
+                if (!this.validate_expected(val, this._expectedValue)) {
+                    throw AnonMessages.BOOL_VALUE_EXPECTED
+                        .split('?VALUE0')
+                        .join(this._expectedValue ? 'true' : 'false');
+                }
 
                 this.validateFuncs(val);
             }
