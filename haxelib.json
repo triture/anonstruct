@@ -3,6 +3,7 @@
   "url": "https://github.com/triture/anonstruct",
   "license": "MIT",
   "tags": [],
+  "classPath": "src/",
   "description": "anonymous structure data validation.",
   "version": "0.0.1",
   "releasenote": "Experimental release",

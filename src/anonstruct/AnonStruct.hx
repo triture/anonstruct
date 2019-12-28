@@ -481,55 +481,72 @@ private class AnonPropString extends AnonProp {
         return this;
     }
 
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isString(value:Dynamic):Bool return (Std.is(value, String));
+    inline private function validate_allowedEmpty(value:String, allowEmpty:Bool):Bool {
+        var len:Int = StringTools.trim(value).length;
+        return (len > 0 || (len == 0 && allowEmpty));
+    }
+    inline private function validate_minChar(value:String, minChar:Null<Int>):Bool return (minChar == null || minChar < 0 || value.length >= minChar);
+    inline private function validate_maxChar(value:String, maxChar:Null<Int>):Bool return (maxChar == null || maxChar < 0 || value.length <= maxChar);
+    inline private function validate_startsWith(value:String, startsWith:Null<String>):Bool return (startsWith == null || startsWith.length == 0 || StringTools.startsWith(value, startsWith));
+    inline private function validate_endsWith(value:String, endsWith:Null<String>):Bool return (endsWith == null || endsWith.length == 0 || StringTools.endsWith(value, endsWith));
+    inline private function validate_allowedChars(value:String, allowedChars:Null<String>):String {
+        var result:String = '';
+        if (allowedChars != null && allowedChars.length > 0) {
+            for (i in 0 ... value.length) 
+                if (allowedChars.indexOf(value.charAt(i)) == -1) {
+                    result = value.charAt(i);
+                    break;
+                }
+        }
+        return result;
+    }
+    private function validate_allowedOptions(value:String, options:Null<Array<String>>, matchCase:Null<Bool>):Bool {
+        if (options == null || options.length == 0) return true;
+        else if (matchCase) return (options.indexOf(value) > -1);
+        else {
+            for (item in options) if (item.toLowerCase() == value.toLowerCase()) return true;
+            return false;
+        }
+    }
+
     override public function validate(value:Dynamic):Void {
-        if (value == null && !this._allowNull) {
+        if (!this.validate_allowedNull(value, this._allowNull)) {
             throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         } else if (value != null) {
-            if (!Std.is(value, String)) {
+            if (!this.validate_isString(value)) {
                 throw AnonMessages.STRING_VALUE_INVALID;
             } else {
 
                 var val:String = cast value;
 
-                if (!this._allowEmpty && StringTools.trim(val).length == 0) throw AnonMessages.STRING_VALUE_CANNOT_BE_EMPTY;
+                if (!this.validate_allowedEmpty(val, _allowEmpty)) throw AnonMessages.STRING_VALUE_CANNOT_BE_EMPTY;
 
-                if (this._minChar != null && val.length < this._minChar)
+                if (!this.validate_minChar(val, this._minChar))
                     throw (
                         this._minChar <= 1
                         ? AnonMessages.STRING_VALUE_MIN_CHAR_SINGLE
                         : AnonMessages.STRING_VALUE_MIN_CHAR_PLURAL
                     ).split('?VALUE0').join(Std.string(this._minChar));
 
-                if (this._maxChar != null && val.length > this._maxChar)
+                if (!this.validate_maxChar(val, this._maxChar))
                     throw (
                         this._maxChar <= 1
                         ? AnonMessages.STRING_VALUE_MAX_CHAR_SINGLE
                         : AnonMessages.STRING_VALUE_MAX_CHAR_PLURAL
                     ).split('?VALUE0').join(Std.string(this._maxChar));
 
-                if (this._startsWith != null && !StringTools.startsWith(val, this._startsWith)) throw AnonMessages.STRING_VALUE_SHOULD_STARTS_WITH.split("?VALUE0").join(this._startsWith);
+                if (!this.validate_startsWith(val, this._startsWith)) throw AnonMessages.STRING_VALUE_SHOULD_STARTS_WITH.split("?VALUE0").join(this._startsWith);
+                if (!this.validate_endsWith(val, this._endsWidth)) throw AnonMessages.STRING_VALUE_SHOULD_ENDS_WITH.split("?VALUE0").join(this._endsWidth);
+                
+                var char:String = this.validate_allowedChars(val, this._allowedChars);
+                if (char.length > 0) throw AnonMessages.STRING_VALUE_CHAR_NOT_ALLOWED.split("?VALUE0").join(char);
 
-                if (this._endsWidth != null && !StringTools.endsWith(val, this._endsWidth)) throw AnonMessages.STRING_VALUE_SHOULD_ENDS_WITH.split("?VALUE0").join(this._endsWidth);
-
-                if (this._allowedChars != null && this._allowedChars.length > 0)
-                    for (char in val.split("")) if (this._allowedChars.indexOf(char) == -1) throw AnonMessages.STRING_VALUE_CHAR_NOT_ALLOWED.split("?VALUE0").join(char);
-
-
-                if (this._allowedOptions != null && this._allowedOptions.length > 0) {
-
-                    var optionsToTry:Null<Array<String>> = this._allowedOptions;
-
-                    if (!this._allowedOptionsMatchCase) {
-                        optionsToTry = [];
-                        for (item in this._allowedOptions) optionsToTry.push(item.toLowerCase());
-                    }
-
-                    if (optionsToTry.indexOf(this._allowedOptionsMatchCase ? val : val.toLowerCase()) < 0) {
-                        throw AnonMessages.STRING_VALUE_OPTION_NOT_ALLOWED
-                            .split('?VALUE0').join(val)
-                            .split('?VALUE1').join(this._allowedOptions.join(', '));
-                    }
-                }
+                if (!this.validate_allowedOptions(val, this._allowedOptions, this._allowedOptionsMatchCase))
+                    throw AnonMessages.STRING_VALUE_OPTION_NOT_ALLOWED
+                        .split('?VALUE0').join(val)
+                        .split('?VALUE1').join(this._allowedOptions.join(', '));
 
                 this.validateFuncs(val);
             }
@@ -595,24 +612,27 @@ private class AnonPropInt extends AnonProp {
         return this;
     }
 
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isInt(value:Dynamic):Bool return (Std.is(value, Int));
+    inline private function validate_min(value:Int, min:Null<Int>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
+    inline private function validate_max(value:Int, max:Null<Int>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
+
     override public function validate(value:Dynamic):Void {
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
-            if (!Std.is(value, Int)) {
-                throw AnonMessages.INT_VALUE_INVALID;
-            } else {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
+            if (!this.validate_isInt(value)) throw AnonMessages.INT_VALUE_INVALID;
+            else {
 
                 var val:Int = cast value;
 
-                if (this._min != null && ((this._minEqual && val < this._min) || (!this._minEqual && val <= this._min)))
+                if (!this.validate_min(val, this._min, this._minEqual))
                     throw (
                         this._minEqual
                         ? AnonMessages.INT_VALUE_GREATER_OR_EQUAL_THAN
                         : AnonMessages.INT_VALUE_GREATER_THAN
                     ).split('?VALUE0').join(Std.string(this._min));
 
-                if (this._max != null && ((this._maxEqual && val > this._max) || (!this._maxEqual && val >= this._max)))
+                if (!this.validate_max(val, this._max, this._maxEqual))
                     throw (
                         this._maxEqual
                         ? AnonMessages.INT_VALUE_LESS_OR_EQUAL_THAN

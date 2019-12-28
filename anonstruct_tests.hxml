@@ -1,0 +1,9 @@
+-cp test
+-cp src
+
+-lib utest
+-lib datetime
+
+-main AnonStructTest
+
+-neko build/anonstruct.n
