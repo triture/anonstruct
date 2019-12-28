@@ -353,6 +353,16 @@ private class AnonPropArray extends AnonProp {
         super();
     }
 
+    public function minLen(len:Int):AnonPropArray {
+        this._minLen = len;
+        return this;
+    }
+
+    public function maxLen(len:Int):AnonPropArray {
+        this._maxLen = len;
+        return this;
+    }
+
     public function addErrorLabel(label:String):AnonPropArray {
         this.propLabel = label;
         return this;
@@ -373,27 +383,35 @@ private class AnonPropArray extends AnonProp {
         return this;
     }
 
+    public function addValidation(func:Array<Dynamic>->Void):AnonPropArray {
+        this._validateFunc.push(func);
+        return this;
+    }
+
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isArray(value:Dynamic):Bool return (Std.is(value, Array));
+    inline private function validate_minLen(value:Array<Dynamic>, minLen:Null<Int>):Bool return (minLen == null || minLen < 0 || value.length >= minLen);
+    inline private function validate_maxLen(value:Array<Dynamic>, maxLen:Null<Int>):Bool return (maxLen == null || maxLen < 0 || value.length <= maxLen);
+    
     override private function validate(value:Dynamic, ?tree:Array<String>):Void {
         if (tree == null) tree = [];
         super.validate(value, tree);
 
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
-            if (!Std.is(value, Array)) {
-                throw AnonMessages.ARRAY_VALUE_INVALID;
-            } else {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
+            if (!this.validate_isArray(value)) throw AnonMessages.ARRAY_VALUE_INVALID;
+            else {
 
                 var val:Array<Dynamic> = cast value;
 
-                if (this._minLen != null && val.length < this._minLen)
+                if (!this.validate_minLen(val, this._minLen))
                     throw (
                         this._minLen <= 1
                         ? AnonMessages.ARRAY_VALUE_MIN_ITEM_SINGLE
                         : AnonMessages.ARRAY_VALUE_MIN_ITEM_PLURAL
                     ).split('?VALUE0').join(Std.string(this._minLen));
 
-                if (this._maxLen != null && val.length > this._maxLen)
+                if (!this.validate_maxLen(val, this._maxLen))
                     throw (
                         this._maxLen <= 1
                         ? AnonMessages.ARRAY_VALUE_MAX_ITEM_SINGLE
@@ -409,6 +427,8 @@ private class AnonPropArray extends AnonProp {
                     }
 
                 }
+
+                this.validateFuncs(val);
             }
         }
 

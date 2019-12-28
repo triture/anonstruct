@@ -35,7 +35,7 @@ trace(validator.getErrors(42));                      // [AnonError:Value must be
 ```
 
 
-For complex objects, you can describe your expected data structure:
+For complex objects, you can describe the expected data structure:
 ```haxe
 var validator:AnonStruct = new AnonStruct();
 validator.valueString('a')
@@ -65,7 +65,7 @@ trace(validator.getErrors({a:'', b:10, child:{b:20, child:{b:null}}}));    // [A
 ```
 
 
-... and Arrays.
+... and arrays.
 ```haxe
 validator.valueArray('list')
     .allowNull()
