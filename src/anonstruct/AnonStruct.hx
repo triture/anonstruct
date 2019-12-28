@@ -3,6 +3,7 @@ package anonstruct;
 import datetime.DateTime;
 import haxe.ds.StringMap;
 
+@:access(anonstruct.AnonProp)
 class AnonStruct {
 
     private var _allowNull:Bool = false;
@@ -91,6 +92,12 @@ class AnonStruct {
         return propObject;
     }
 
+    public function valueArray(prop:String):AnonPropArray {
+        var propArray:AnonPropArray = new AnonPropArray();
+        this.propMap.set(prop, propArray);
+        return propArray;
+    }
+
     public function valueDate(prop:String):AnonPropDate {
         var propDate:AnonPropDate = new AnonPropDate();
         this.propMap.set(prop, propDate);
@@ -103,33 +110,53 @@ class AnonStruct {
         return propBool;
     }
 
-    public function validateAll(data:Dynamic):Void {
+    public function validateAll(data:Dynamic, stopOnFirstError:Bool = false):Void {
+        this.validateTree(data, stopOnFirstError, []);
+    }
+
+    private function validateTree(data:Dynamic, stopOnFirstError:Bool = false, tree:Array<String> = null) {
+        if (tree == null) tree = [];
         var errors:Array<AnonError> = [];
 
-        if (data == null && !this._allowNull) {
-            errors.push(new AnonError("", "", AnonMessages.NULL_VALUE_NOT_ALLOWED));
-        } else {
+        var addDynamicError = function(e:Dynamic, possibleLabel:String, possibleKey:String):Void {
+            if (Std.is(e, Array)) {
+                var erroList:Array<Dynamic> = cast e;
 
-            if (this.currentStruct != null) this.currentStruct.validate(data);
+                for (item in erroList) {
+                    if (Std.is(item, AnonError)) errors.push(item);
+                    else errors.push(new AnonError(possibleLabel, possibleKey, Std.string(e)));
+                }
+            } 
+            else if (Std.is(e, AnonError)) errors.push(cast e);
+            else errors.push(new AnonError(possibleLabel, possibleKey, Std.string(e)));
+
+            if (stopOnFirstError) throw errors;
+        }
+
+        if (data == null && !this._allowNull) {
+            addDynamicError(AnonMessages.NULL_VALUE_NOT_ALLOWED, '', tree.join('.'));
+        } else {
+            
+            try {
+                if (this.currentStruct != null) this.currentStruct.validate(data, tree);
+            } catch(e:Dynamic) {
+                addDynamicError(e, this.currentStruct.propLabel, tree.join('.'));
+            }
 
             for (key in this.propMap.keys()) {
-
-                var value:Dynamic = Reflect.getProperty(data, key);
+                
+                var value:Dynamic = null;
 
                 try {
-                    this.propMap.get(key).validate(value);
-                } catch (e:AnonError) {
-                    errors.push(e);
+                    value = Reflect.getProperty(data, key);
+                } catch (e:Dynamic) {}
+
+                var tempTree:Array<String> = tree.concat([key]);
+
+                try {
+                    this.propMap.get(key).validate(value, tempTree);
                 } catch (e:Dynamic) {
-
-                    if (Std.is(e, Array)) {
-
-                        var erroList:Array<AnonError> = cast e;
-                        for (item in erroList) errors.push(item);
-
-                    } else {
-                        errors.push(new AnonError(this.propMap.get(key).propLabel, key, Std.string(e)));
-                    }
+                    addDynamicError(e, this.propMap.get(key).propLabel, tempTree.join('.'));
                 }
 
             }
@@ -138,46 +165,31 @@ class AnonStruct {
                 try {
                     func(data);
                 } catch (e:Dynamic) {
-                    errors.push(new AnonError("", "", Std.string(e)));
+                    addDynamicError(e, '', tree.join('.'));
                 }
             }
         }
 
         if (errors.length > 0) throw(errors);
-
     }
 
     public function validate(data:Dynamic):Void {
-
-        if (data == null && !this._allowNull) {
-            throw new AnonError("", "", AnonMessages.NULL_VALUE_NOT_ALLOWED);
-        } else {
-
-            if (this.currentStruct != null) this.currentStruct.validate(data);
-
-            for (key in this.propMap.keys()) {
-
-                var value:Dynamic = Reflect.getProperty(data, key);
-
-                try {
-                    this.propMap.get(key).validate(value);
-                } catch (e:AnonError) {
-                    throw e;
-                } catch (e:Dynamic) {
-                    throw new AnonError(this.propMap.get(key).propLabel, key, Std.string(e));
-                }
-
-            }
-
-            for (func in this._validateFunc) {
-                try {
-                    func(data);
-                } catch (e:Dynamic) {
-                    throw new AnonError("", "", Std.string(e));
-                }
-            }
+        try {
+            this.validateAll(data, true);
+        } catch (e:Dynamic) {
+            var arr:Array<AnonError> = cast e;
+            throw e[0];
         }
+    }
 
+    public function getErrors(data:Dynamic):Array<AnonError> {
+        try {
+            this.validateAll(data);
+            return [];
+        } catch (e:Dynamic) {
+            var arr:Array<AnonError> = cast e;
+            return arr;
+        }
     }
 
     public function pass(data:Dynamic):Bool {
@@ -197,7 +209,9 @@ private class AnonProp {
 
     public function new() {}
 
-    public function validate(value:Dynamic):Void {}
+    private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        
+    }
 
     private function validateFuncs(val:Dynamic):Void {
         for (func in this._validateFunc) func(val);
@@ -291,7 +305,9 @@ private class AnonPropDate extends AnonProp {
     inline private function validate_min(value:DateTime, min:Null<DateTime>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
     inline private function validate_max(value:DateTime, max:Null<DateTime>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+        
         if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         else if (value != null) {
 
@@ -324,6 +340,7 @@ private class AnonPropDate extends AnonProp {
 
 }
 
+@:access(anonstruct.AnonStruct)
 private class AnonPropArray extends AnonProp {
 
     private var _maxLen:Null<Int> = null;
@@ -356,7 +373,9 @@ private class AnonPropArray extends AnonProp {
         return this;
     }
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        if (tree == null) tree = [];
+        super.validate(value, tree);
 
         if (value == null && !this._allowNull) {
             throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
@@ -383,7 +402,11 @@ private class AnonPropArray extends AnonProp {
 
                 if (this._childStruct != null) {
 
-                    for (item in val) this._childStruct.validate(item);
+                    for (i in 0 ... val.length) {
+                        var item = val[i];
+                        
+                        this._childStruct.validateTree(item, tree.concat(['[$i]']));
+                    }
 
                 }
             }
@@ -393,6 +416,7 @@ private class AnonPropArray extends AnonProp {
 
 }
 
+@:access(anonstruct.AnonStruct)
 private class AnonPropObject extends AnonProp {
 
     private var _allowNull:Bool = false;
@@ -427,13 +451,15 @@ private class AnonPropObject extends AnonProp {
         return this;
     }
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        if (tree == null) tree = [];
+        super.validate(value, tree);
 
         if (value == null && !this._allowNull) {
             throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         } else if (value != null) {
 
-            if (this._struct != null) this._struct.validate(value);
+            if (this._struct != null) this._struct.validateTree(value, tree.copy());
 
             this.validateFuncs(value);
 
@@ -525,9 +551,10 @@ private class AnonPropString extends AnonProp {
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
     inline private function validate_isString(value:Dynamic):Bool return (Std.is(value, String));
-    inline private function validate_allowedEmpty(value:String, allowEmpty:Bool):Bool {
+    inline private function validate_isEmpty(value:String):Bool return (StringTools.trim(value).length == 0);
+    inline private function validate_allowedEmpty(value:String, allowEmpty:Null<Bool>):Bool {
         var len:Int = StringTools.trim(value).length;
-        return (len > 0 || (len == 0 && allowEmpty));
+        return (len > 0 || (len == 0 && allowEmpty == true));
     }
     inline private function validate_minChar(value:String, minChar:Null<Int>):Bool return (minChar == null || minChar < 0 || value.length >= minChar);
     inline private function validate_maxChar(value:String, maxChar:Null<Int>):Bool return (maxChar == null || maxChar < 0 || value.length <= maxChar);
@@ -553,7 +580,9 @@ private class AnonPropString extends AnonProp {
         }
     }
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+
         if (!this.validate_allowedNull(value, this._allowNull)) {
             throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         } else if (value != null) {
@@ -565,31 +594,33 @@ private class AnonPropString extends AnonProp {
 
                 if (!this.validate_allowedEmpty(val, _allowEmpty)) throw AnonMessages.STRING_VALUE_CANNOT_BE_EMPTY;
 
-                if (!this.validate_minChar(val, this._minChar))
-                    throw (
-                        this._minChar <= 1
-                        ? AnonMessages.STRING_VALUE_MIN_CHAR_SINGLE
-                        : AnonMessages.STRING_VALUE_MIN_CHAR_PLURAL
-                    ).split('?VALUE0').join(Std.string(this._minChar));
+                if (!this.validate_isEmpty(val)) {
+                    if (!this.validate_minChar(val, this._minChar))
+                        throw (
+                            this._minChar <= 1
+                            ? AnonMessages.STRING_VALUE_MIN_CHAR_SINGLE
+                            : AnonMessages.STRING_VALUE_MIN_CHAR_PLURAL
+                        ).split('?VALUE0').join(Std.string(this._minChar));
 
-                if (!this.validate_maxChar(val, this._maxChar))
-                    throw (
-                        this._maxChar <= 1
-                        ? AnonMessages.STRING_VALUE_MAX_CHAR_SINGLE
-                        : AnonMessages.STRING_VALUE_MAX_CHAR_PLURAL
-                    ).split('?VALUE0').join(Std.string(this._maxChar));
+                    if (!this.validate_maxChar(val, this._maxChar))
+                        throw (
+                            this._maxChar <= 1
+                            ? AnonMessages.STRING_VALUE_MAX_CHAR_SINGLE
+                            : AnonMessages.STRING_VALUE_MAX_CHAR_PLURAL
+                        ).split('?VALUE0').join(Std.string(this._maxChar));
 
-                if (!this.validate_startsWith(val, this._startsWith)) throw AnonMessages.STRING_VALUE_SHOULD_STARTS_WITH.split("?VALUE0").join(this._startsWith);
-                if (!this.validate_endsWith(val, this._endsWidth)) throw AnonMessages.STRING_VALUE_SHOULD_ENDS_WITH.split("?VALUE0").join(this._endsWidth);
+                    if (!this.validate_startsWith(val, this._startsWith)) throw AnonMessages.STRING_VALUE_SHOULD_STARTS_WITH.split("?VALUE0").join(this._startsWith);
+                    if (!this.validate_endsWith(val, this._endsWidth)) throw AnonMessages.STRING_VALUE_SHOULD_ENDS_WITH.split("?VALUE0").join(this._endsWidth);
+                    
+                    var char:String = this.validate_allowedChars(val, this._allowedChars);
+                    if (char.length > 0) throw AnonMessages.STRING_VALUE_CHAR_NOT_ALLOWED.split("?VALUE0").join(char);
+
+                    if (!this.validate_allowedOptions(val, this._allowedOptions, this._allowedOptionsMatchCase))
+                        throw AnonMessages.STRING_VALUE_OPTION_NOT_ALLOWED
+                            .split('?VALUE0').join(val)
+                            .split('?VALUE1').join(this._allowedOptions.join(', '));   
+                }
                 
-                var char:String = this.validate_allowedChars(val, this._allowedChars);
-                if (char.length > 0) throw AnonMessages.STRING_VALUE_CHAR_NOT_ALLOWED.split("?VALUE0").join(char);
-
-                if (!this.validate_allowedOptions(val, this._allowedOptions, this._allowedOptionsMatchCase))
-                    throw AnonMessages.STRING_VALUE_OPTION_NOT_ALLOWED
-                        .split('?VALUE0').join(val)
-                        .split('?VALUE1').join(this._allowedOptions.join(', '));
-
                 this.validateFuncs(val);
             }
         }
@@ -659,7 +690,9 @@ private class AnonPropInt extends AnonProp {
     inline private function validate_min(value:Int, min:Null<Int>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
     inline private function validate_max(value:Int, max:Null<Int>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+
         if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         else if (value != null) {
             if (!this.validate_isInt(value)) throw AnonMessages.INT_VALUE_INVALID;
@@ -750,7 +783,9 @@ private class AnonPropFloat extends AnonProp {
     inline private function validate_min(value:Float, min:Null<Float>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
     inline private function validate_max(value:Float, max:Null<Float>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+
         if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         else if (value != null) {
             if (!this.validate_isFloat(value)) throw AnonMessages.FLOAT_VALUE_INVALID;
@@ -817,7 +852,9 @@ private class AnonPropBool extends AnonProp {
     inline private function validate_isBool(value:Dynamic):Bool return (Std.is(value, Bool));
     inline private function validate_expected(value:Bool, expected:Null<Bool>):Bool return ((expected == null) || (expected != null && value == expected));
 
-    override public function validate(value:Dynamic):Void {
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+
         if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         else if (value != null) {
             if (!this.validate_isBool(value)) throw AnonMessages.BOOL_VALUE_INVALID;

@@ -1,8 +1,7 @@
 -cp test
--cp src
 
 -lib utest
--lib datetime
+-lib anonstruct
 
 -main AnonStructTest
 
