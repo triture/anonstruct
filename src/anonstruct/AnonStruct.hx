@@ -679,48 +679,51 @@ private class AnonPropFloat extends AnonProp {
         return this;
     }
 
-    public function lessThan(maxValue:Null<Int>):AnonPropFloat {
+    public function lessThan(maxValue:Null<Float>):AnonPropFloat {
         this._max = maxValue;
         this._maxEqual = false;
         return this;
     }
 
-    public function lessOrEqualThan(maxValue:Null<Int>):AnonPropFloat {
+    public function lessOrEqualThan(maxValue:Null<Float>):AnonPropFloat {
         this._max = maxValue;
         this._maxEqual = true;
         return this;
     }
 
-    public function greaterThan(minValue:Null<Int>):AnonPropFloat {
+    public function greaterThan(minValue:Null<Float>):AnonPropFloat {
         this._min = minValue;
         this._minEqual = false;
         return this;
     }
 
-    public function greaterOrEqualThan(minValue:Null<Int>):AnonPropFloat {
+    public function greaterOrEqualThan(minValue:Null<Float>):AnonPropFloat {
         this._min = minValue;
         this._minEqual = true;
         return this;
     }
 
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isFloat(value:Dynamic):Bool return (Std.is(value, Float));
+    inline private function validate_min(value:Float, min:Null<Float>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
+    inline private function validate_max(value:Float, max:Null<Float>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
+
     override public function validate(value:Dynamic):Void {
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
-            if (!Std.is(value, Float)) {
-                throw AnonMessages.FLOAT_VALUE_INVALID;
-            } else {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
+            if (!this.validate_isFloat(value)) throw AnonMessages.FLOAT_VALUE_INVALID;
+            else {
 
                 var val:Float = cast value;
 
-                if (this._min != null && ((this._minEqual && val < this._min) || (!this._minEqual && val <= this._min)))
+                if (!this.validate_min(val, this._min, this._minEqual))
                     throw (
                         this._minEqual
                         ? AnonMessages.INT_VALUE_GREATER_OR_EQUAL_THAN
                         : AnonMessages.INT_VALUE_GREATER_THAN
                     ).split('?VALUE0').join(Std.string(this._min));
 
-                if (this._max != null && ((this._maxEqual && val > this._max) || (!this._maxEqual && val >= this._max)))
+                if (!this.validate_max(val, this._max, this._maxEqual))
                     throw (
                         this._maxEqual
                         ? AnonMessages.INT_VALUE_LESS_OR_EQUAL_THAN
