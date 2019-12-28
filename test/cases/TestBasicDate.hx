@@ -71,7 +71,7 @@ class TestBasicDate extends Test {
         Assert.raises(new AnonStruct().setDate().lessThan('2020-01-01 00:00:00').validate.bind('2020-01-01 00:00:00'));
         Assert.raises(new AnonStruct().setDate().lessOrEqualThan('2020-01-01 00:00:01').validate.bind('2020-01-01 00:00:00'));
         Assert.raises(new AnonStruct().setDate().addValidation(
-            function(value:DateTime):Void if (value == '2020-01-01 00:00:00') throw "Error"
-        ).validate.bind(DateTime.fromString('2020-01-01 00:00:00')));
+            function(value:DateTime):Void if (value == DateTime.fromString('2020-01-01 00:00:00')) throw "Error"
+        ).validate.bind('2020-01-01 00:00:00'));
     }
 }
