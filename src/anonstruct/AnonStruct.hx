@@ -208,6 +208,14 @@ private class AnonPropDate extends AnonProp {
         return this;
     }
 
+    override private function validateFuncs(val:Dynamic):Void {
+        var currVal:DateTime = val;
+        for (func in this._validateFunc) {
+            var currFunc:DateTime->Void = func;
+            currFunc(currVal);
+        }
+    }
+
     public function addValidation(func:DateTime->Void):AnonPropDate {
         this._validateFunc.push(func);
         return this;
@@ -247,33 +255,46 @@ private class AnonPropDate extends AnonProp {
         return this;
     }
 
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    private function validate_isDateTime(value:Dynamic):Bool {
+        if (Std.is(value, Date)) return true;
+        else if (Std.is(value, String)) {
+            try {
+                DateTime.fromString(value);
+                return true;
+            } catch (e:Dynamic) {}
+        } else if (Std.is(value, Float)) {
+            try {
+                DateTime.fromTime(value);
+                return true;
+            } catch (e:Dynamic) {}
+        }
+
+        return false;
+    }
+
+    inline private function validate_min(value:DateTime, min:Null<DateTime>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
+    inline private function validate_max(value:DateTime, max:Null<DateTime>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
+
     override public function validate(value:Dynamic):Void {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
 
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
+            if (!this.validate_isDateTime(value)) throw AnonMessages.DATE_VALUE_INVALID;
+            else {
+                
+                var date:DateTime = Std.is(value, String) 
+                    ? DateTime.fromString(value)
+                    : DateTime.fromDate(value);
 
-            var date:Null<DateTime> = null;
-
-            if (Std.is(value, String)) {
-                // check if is string date format
-                try {
-                    date = DateTime.fromString(value);
-                } catch (e:Dynamic) {
-                    throw AnonMessages.DATE_VALUE_INVALID;
-                }
-            } else if (Std.is(value, Date)) {
-
-                date = DateTime.fromDate(cast(value, Date));
-
-                if (this._minDate != null && ((this._minEqual && date < this._minDate) || (!this._minEqual && date <= this._minDate)))
+                if (!this.validate_min(date, this._minDate, this._minEqual))
                     throw (
                         this._minEqual
                         ? AnonMessages.DATE_VALUE_MUST_BE_BEFORE_OR_EQUAL
                         : AnonMessages.DATE_VALUE_MUST_BE_BEFORE
                     ).split('?VALUE0').join(this._minDate.toString());
 
-                if (this._maxDate != null && ((this._maxEqual && date > this._maxDate) || (!this._maxEqual && date >= this._maxDate)))
+                if (!this.validate_max(date, this._maxDate, this._maxEqual))
                     throw (
                         this._maxEqual
                         ? AnonMessages.DATE_VALUE_MUST_BE_AFTER_OR_EQUAL
@@ -282,7 +303,7 @@ private class AnonPropDate extends AnonProp {
 
                 this.validateFuncs(date);
 
-            } else throw AnonMessages.DATE_VALUE_INVALID;
+            }
         }
     }
 

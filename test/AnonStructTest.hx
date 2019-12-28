@@ -6,6 +6,7 @@ import cases.TestBasicString;
 import cases.TestBasicInt;
 import cases.TestBasicFloat;
 import cases.TestBasicBool;
+import cases.TestBasicDate;
 
 class AnonStructTest {
     
@@ -13,6 +14,7 @@ class AnonStructTest {
         
         var runner = new Runner();
 
+        runner.addCase(new TestBasicDate());
         runner.addCase(new TestBasicString());
         runner.addCase(new TestBasicInt());
         runner.addCase(new TestBasicFloat());
