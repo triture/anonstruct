@@ -4,9 +4,9 @@
   "license": "MIT",
   "tags": [],
   "classPath": "src/",
-  "description": "anonymous structure data validation.",
-  "version": "0.0.1",
-  "releasenote": "Experimental release",
+  "description": "Structural validation for dynamic / anonymous objects at runtime.",
+  "version": "0.1.0",
+  "releasenote": "First Release. Tests and suggestions are super welcome!",
   "contributors": [ "triture" ],
   "dependencies": {
     "datetime" : ""
