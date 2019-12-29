@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/triture/anonstruct.svg?branch=master)](https://travis-ci.org/triture/anonstruct.svg)
+[![Build Status](https://travis-ci.org/triture/anonstruct.svg?branch=master)](https://travis-ci.org/triture/anonstruct)
 
 
 # Anonymous Structures
