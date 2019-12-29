@@ -1,0 +1,20 @@
+{
+    "haxe.configurations": [ // one or more configurations for the haxe completion server
+        [
+            "-cp", "test",
+            "-lib", "utest",
+            "-lib", "anonstruct",
+            "-main", "AnonStructTest",
+            "-neko", "build/anonstruct.n"
+        ],[
+            "-cp", "examples",
+            "-lib", "utest",
+            "-lib", "anonstruct",
+            "-main", "AnonStructExamples",
+            "-neko", "build/examples.n"
+        ] // hxml file is a normal Haxe argument too
+    ],
+    "haxe.displayServer": { // configuration for starting haxe completion server itself
+        "arguments": ["-v"], // arguments before --wait (-v is useful for debugging)
+    }
+}
