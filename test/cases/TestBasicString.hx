@@ -8,7 +8,7 @@ import anonstruct.AnonStruct;
 class TestBasicString extends Test {
 
     function testIsString() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
         
         Assert.isTrue(anon.validate_isString(''));
         Assert.isTrue(anon.validate_isString(""));
@@ -23,7 +23,7 @@ class TestBasicString extends Test {
     }
 
     function testAllowedNull() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
         
         Assert.isTrue(anon.validate_allowedNull(null, true));
         Assert.isTrue(anon.validate_allowedNull('', true));
@@ -33,7 +33,7 @@ class TestBasicString extends Test {
     }
 
     function testAllowedEmpty() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_allowedEmpty('', true));
         Assert.isTrue(anon.validate_allowedEmpty('  ', true));
@@ -47,7 +47,7 @@ class TestBasicString extends Test {
     }
 
     function testMinChar() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_minChar('', null));
         Assert.isTrue(anon.validate_minChar('', 0));
@@ -59,7 +59,7 @@ class TestBasicString extends Test {
     }
 
     function testMaxChar() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_maxChar('', null));
         Assert.isTrue(anon.validate_maxChar('', 0));
@@ -71,7 +71,7 @@ class TestBasicString extends Test {
     }
 
     function testStartsWith() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_startsWith('', null));
         Assert.isTrue(anon.validate_startsWith('', ''));
@@ -83,7 +83,7 @@ class TestBasicString extends Test {
     }
 
     function testEndsWith() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_endsWith('', null));
         Assert.isTrue(anon.validate_endsWith('', ''));
@@ -95,7 +95,7 @@ class TestBasicString extends Test {
     }
 
     function testAllowedChars() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.equals(anon.validate_allowedChars('abc', null), '');
         Assert.equals(anon.validate_allowedChars('abc', ''), '');
@@ -107,7 +107,7 @@ class TestBasicString extends Test {
     }
 
     function testAllowedOptions() {
-        var anon = new AnonStruct().setString();
+        var anon = new AnonStruct().valueString();
 
         Assert.isTrue(anon.validate_allowedOptions('a', null, null));
         Assert.isTrue(anon.validate_allowedOptions('a', [], null));
@@ -122,18 +122,18 @@ class TestBasicString extends Test {
     }
 
     function testStruct() {
-        Assert.raises(new AnonStruct().setString().validate.bind(0));
-        Assert.raises(new AnonStruct().setString().refuseNull().validate.bind(null));
-        Assert.raises(new AnonStruct().setString().refuseEmpty().validate.bind(''));
-        Assert.raises(new AnonStruct().setString().minChar(3).validate.bind('ab'));
-        Assert.raises(new AnonStruct().setString().maxChar(2).validate.bind('abc'));
-        Assert.raises(new AnonStruct().setString().startsWith('abx').validate.bind('abcde'));
-        Assert.raises(new AnonStruct().setString().endsWith('xde').validate.bind('abcde'));
-        Assert.raises(new AnonStruct().setString().allowChars('abc').validate.bind('abcx'));
-        Assert.raises(new AnonStruct().setString().setAllowedOptions(['a', 'b']).validate.bind('c'));
+        Assert.raises(new AnonStruct().valueString().validate.bind(0));
+        Assert.raises(new AnonStruct().valueString().refuseNull().validate.bind(null));
+        Assert.raises(new AnonStruct().valueString().refuseEmpty().validate.bind(''));
+        Assert.raises(new AnonStruct().valueString().minChar(3).validate.bind('ab'));
+        Assert.raises(new AnonStruct().valueString().maxChar(2).validate.bind('abc'));
+        Assert.raises(new AnonStruct().valueString().startsWith('abx').validate.bind('abcde'));
+        Assert.raises(new AnonStruct().valueString().endsWith('xde').validate.bind('abcde'));
+        Assert.raises(new AnonStruct().valueString().allowChars('abc').validate.bind('abcx'));
+        Assert.raises(new AnonStruct().valueString().setAllowedOptions(['a', 'b']).validate.bind('c'));
         
         Assert.raises(
-            new AnonStruct().setString()
+            new AnonStruct().valueString()
             .addValidation(
                 function(value:String):Void if (value == "error") throw "Error"
             ).validate.bind("error")

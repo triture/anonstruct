@@ -9,7 +9,7 @@ import utest.Test;
 class TestBasicDate extends Test {
 
     function testIsInt() {
-        var anon = new AnonStruct().setDate();
+        var anon = new AnonStruct().valueDate();
 
         Assert.isTrue(anon.validate_isDateTime(DateTime.fromString('2020-01-01 00:00:00')));
         Assert.isTrue(anon.validate_isDateTime('2020-01-01 00:00:00'));
@@ -27,7 +27,7 @@ class TestBasicDate extends Test {
     }
 
     function testAllowedNull() {
-        var anon = new AnonStruct().setDate();
+        var anon = new AnonStruct().valueDate();
         
         Assert.isTrue(anon.validate_allowedNull(null, true));
         Assert.isTrue(anon.validate_allowedNull('2020-01-01 00:00:00', true));
@@ -37,7 +37,7 @@ class TestBasicDate extends Test {
     }
 
     function testMin() {
-        var anon = new AnonStruct().setDate();
+        var anon = new AnonStruct().valueDate();
         
         Assert.isTrue(anon.validate_min('2020-01-01 00:00:00', null, null));
         Assert.isTrue(anon.validate_min('2020-01-01 00:00:01', '2020-01-01 00:00:00', null));
@@ -50,7 +50,7 @@ class TestBasicDate extends Test {
     }
 
     function testMax() {
-        var anon = new AnonStruct().setDate();
+        var anon = new AnonStruct().valueDate();
         
         Assert.isTrue(anon.validate_max('2020-01-01 00:00:00', null, null));
         Assert.isTrue(anon.validate_max('2020-01-01 00:00:00', '2020-01-01 00:00:01', null));
@@ -63,14 +63,14 @@ class TestBasicDate extends Test {
     }
 
     function testStruct() {
-        Assert.raises(new AnonStruct().setDate().validate.bind('abcd'));
-        Assert.raises(new AnonStruct().setDate().validate.bind('0'));
-        Assert.raises(new AnonStruct().setDate().refuseNull().validate.bind(null));
-        Assert.raises(new AnonStruct().setDate().greaterThan('2020-01-01 00:00:00').validate.bind('2020-01-01 00:00:00'));
-        Assert.raises(new AnonStruct().setDate().greaterOrEqualThan('2020-01-01 00:00:01').validate.bind('2020-01-01 00:00:00'));
-        Assert.raises(new AnonStruct().setDate().lessThan('2020-01-01 00:00:00').validate.bind('2020-01-01 00:00:00'));
-        Assert.raises(new AnonStruct().setDate().lessOrEqualThan('2020-01-01 00:00:01').validate.bind('2020-01-01 00:00:00'));
-        Assert.raises(new AnonStruct().setDate().addValidation(
+        Assert.raises(new AnonStruct().valueDate().validate.bind('abcd'));
+        Assert.raises(new AnonStruct().valueDate().validate.bind('0'));
+        Assert.raises(new AnonStruct().valueDate().refuseNull().validate.bind(null));
+        Assert.raises(new AnonStruct().valueDate().greaterThan('2020-01-01 00:00:00').validate.bind('2020-01-01 00:00:00'));
+        Assert.raises(new AnonStruct().valueDate().greaterOrEqualThan('2020-01-01 00:00:01').validate.bind('2020-01-01 00:00:00'));
+        Assert.raises(new AnonStruct().valueDate().lessThan('2020-01-01 00:00:00').validate.bind('2020-01-01 00:00:00'));
+        Assert.raises(new AnonStruct().valueDate().lessOrEqualThan('2020-01-01 00:00:01').validate.bind('2020-01-01 00:00:00'));
+        Assert.raises(new AnonStruct().valueDate().addValidation(
             function(value:DateTime):Void if (value == DateTime.fromString('2020-01-01 00:00:00')) throw "Error"
         ).validate.bind('2020-01-01 00:00:00'));
     }

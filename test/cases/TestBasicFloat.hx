@@ -8,7 +8,7 @@ import utest.Test;
 class TestBasicFloat extends Test {
 
     function testIsInt() {
-        var anon = new AnonStruct().setFloat();
+        var anon = new AnonStruct().valueFloat();
         
         Assert.isTrue(anon.validate_isFloat(0.1));
         Assert.isTrue(anon.validate_isFloat(1));
@@ -22,7 +22,7 @@ class TestBasicFloat extends Test {
     }
 
     function testAllowedNull() {
-        var anon = new AnonStruct().setFloat();
+        var anon = new AnonStruct().valueFloat();
         
         Assert.isTrue(anon.validate_allowedNull(null, true));
         Assert.isTrue(anon.validate_allowedNull(1.1, true));
@@ -32,7 +32,7 @@ class TestBasicFloat extends Test {
     }
 
     function testMin() {
-        var anon = new AnonStruct().setFloat();
+        var anon = new AnonStruct().valueFloat();
         
         Assert.isTrue(anon.validate_min(1.1, null, null));
         Assert.isTrue(anon.validate_min(1.1, 0, null));
@@ -45,7 +45,7 @@ class TestBasicFloat extends Test {
     }
 
     function testMax() {
-        var anon = new AnonStruct().setFloat();
+        var anon = new AnonStruct().valueFloat();
         
         Assert.isTrue(anon.validate_max(0.1, null, null));
         Assert.isTrue(anon.validate_max(0.1, 1.1, null));
@@ -58,13 +58,13 @@ class TestBasicFloat extends Test {
     }
 
     function testStruct() {
-        Assert.raises(new AnonStruct().setFloat().validate.bind(''));
-        Assert.raises(new AnonStruct().setFloat().refuseNull().validate.bind(null));
-        Assert.raises(new AnonStruct().setFloat().greaterThan(1.1).validate.bind(1.1));
-        Assert.raises(new AnonStruct().setFloat().greaterOrEqualThan(1.1).validate.bind(0.1));
-        Assert.raises(new AnonStruct().setFloat().lessThan(0.1).validate.bind(0.1));
-        Assert.raises(new AnonStruct().setFloat().lessOrEqualThan(0.1).validate.bind(1.1));
-        Assert.raises(new AnonStruct().setFloat().addValidation(
+        Assert.raises(new AnonStruct().valueFloat().validate.bind(''));
+        Assert.raises(new AnonStruct().valueFloat().refuseNull().validate.bind(null));
+        Assert.raises(new AnonStruct().valueFloat().greaterThan(1.1).validate.bind(1.1));
+        Assert.raises(new AnonStruct().valueFloat().greaterOrEqualThan(1.1).validate.bind(0.1));
+        Assert.raises(new AnonStruct().valueFloat().lessThan(0.1).validate.bind(0.1));
+        Assert.raises(new AnonStruct().valueFloat().lessOrEqualThan(0.1).validate.bind(1.1));
+        Assert.raises(new AnonStruct().valueFloat().addValidation(
             function(value:Float):Void if (value == 0.1) throw "Error"
         ).validate.bind(0.1));
     }

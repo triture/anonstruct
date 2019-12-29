@@ -8,7 +8,7 @@ import utest.Test;
 class TestBasicInt extends Test {
 
     function testIsInt() {
-        var anon = new AnonStruct().setInt();
+        var anon = new AnonStruct().valueInt();
         
         Assert.isTrue(anon.validate_isInt(0));
         
@@ -22,7 +22,7 @@ class TestBasicInt extends Test {
     }
 
     function testAllowedNull() {
-        var anon = new AnonStruct().setInt();
+        var anon = new AnonStruct().valueInt();
         
         Assert.isTrue(anon.validate_allowedNull(null, true));
         Assert.isTrue(anon.validate_allowedNull(1, true));
@@ -32,7 +32,7 @@ class TestBasicInt extends Test {
     }
 
     function testMin() {
-        var anon = new AnonStruct().setInt();
+        var anon = new AnonStruct().valueInt();
         
         Assert.isTrue(anon.validate_min(1, null, null));
         Assert.isTrue(anon.validate_min(1, 0, null));
@@ -45,7 +45,7 @@ class TestBasicInt extends Test {
     }
 
     function testMax() {
-        var anon = new AnonStruct().setInt();
+        var anon = new AnonStruct().valueInt();
         
         Assert.isTrue(anon.validate_max(0, null, null));
         Assert.isTrue(anon.validate_max(0, 1, null));
@@ -58,13 +58,13 @@ class TestBasicInt extends Test {
     }
 
     function testStruct() {
-        Assert.raises(new AnonStruct().setInt().validate.bind(''));
-        Assert.raises(new AnonStruct().setInt().refuseNull().validate.bind(null));
-        Assert.raises(new AnonStruct().setInt().greaterThan(1).validate.bind(1));
-        Assert.raises(new AnonStruct().setInt().greaterOrEqualThan(1).validate.bind(0));
-        Assert.raises(new AnonStruct().setInt().lessThan(0).validate.bind(0));
-        Assert.raises(new AnonStruct().setInt().lessOrEqualThan(0).validate.bind(1));
-        Assert.raises(new AnonStruct().setInt().addValidation(
+        Assert.raises(new AnonStruct().valueInt().validate.bind(''));
+        Assert.raises(new AnonStruct().valueInt().refuseNull().validate.bind(null));
+        Assert.raises(new AnonStruct().valueInt().greaterThan(1).validate.bind(1));
+        Assert.raises(new AnonStruct().valueInt().greaterOrEqualThan(1).validate.bind(0));
+        Assert.raises(new AnonStruct().valueInt().lessThan(0).validate.bind(0));
+        Assert.raises(new AnonStruct().valueInt().lessOrEqualThan(0).validate.bind(1));
+        Assert.raises(new AnonStruct().valueInt().addValidation(
             function(value:Int):Void if (value == 0) throw "Error"
         ).validate.bind(0));
     }

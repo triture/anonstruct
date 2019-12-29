@@ -10,16 +10,16 @@ class TestBasicObject extends Test {
         
         var anon = new AnonStruct();
 
-        anon.valueString('first_name')
+        anon.propertyString('first_name')
             .refuseEmpty()
             .refuseEmpty();
 
-        anon.valueString('last_name')
+        anon.propertyString('last_name')
             .refuseEmpty()
             .refuseEmpty()
             .minChar(4);
 
-        anon.valueInt('age')
+        anon.propertyInt('age')
             .refuseNull()
             .greaterOrEqualThan(18)
             .lessOrEqualThan(100);
@@ -81,7 +81,7 @@ class TestBasicObject extends Test {
 
         var validateAddress = new AnonStruct();
         
-        validateAddress.valueString('country')
+        validateAddress.propertyString('country')
             .setAllowedOptions(
                 [
                     'Brazil',
@@ -90,11 +90,11 @@ class TestBasicObject extends Test {
                 ], false
             );
         
-        validateAddress.valueString('city')
+        validateAddress.propertyString('city')
             .allowNull()
             .allowEmpty();
 
-        validateAddress.valueString('state')
+        validateAddress.propertyString('state')
             .allowNull()
             .allowEmpty()
             .minChar(2)
@@ -102,21 +102,21 @@ class TestBasicObject extends Test {
 
         var validatePerson = new AnonStruct();
 
-        validatePerson.valueString('first_name')
+        validatePerson.propertyString('first_name')
             .refuseEmpty()
             .refuseEmpty();
 
-        validatePerson.valueString('last_name')
+        validatePerson.propertyString('last_name')
             .refuseEmpty()
             .refuseEmpty()
             .minChar(4);
 
-        validatePerson.valueInt('age')
+        validatePerson.propertyInt('age')
             .refuseNull()
             .greaterOrEqualThan(18)
             .lessOrEqualThan(100);
 
-        validatePerson.valueObject('address')
+        validatePerson.propertyObject('address')
             .allowNull()
             .setStruct(validateAddress);
 

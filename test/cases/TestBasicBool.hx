@@ -8,7 +8,7 @@ import utest.Test;
 class TestBasicBool extends Test {
 
     function testIsBool() {
-        var anon = new AnonStruct().setBool();
+        var anon = new AnonStruct().valueBool();
         
         Assert.isTrue(anon.validate_isBool(true));
         Assert.isTrue(anon.validate_isBool(false));
@@ -23,7 +23,7 @@ class TestBasicBool extends Test {
     }
 
     function testAllowedNull() {
-        var anon = new AnonStruct().setBool();
+        var anon = new AnonStruct().valueBool();
         
         Assert.isTrue(anon.validate_allowedNull(null, true));
         Assert.isTrue(anon.validate_allowedNull(true, true));
@@ -33,7 +33,7 @@ class TestBasicBool extends Test {
     }
 
     function testExpected() {
-        var anon = new AnonStruct().setBool();
+        var anon = new AnonStruct().valueBool();
         
         Assert.isTrue(anon.validate_expected(true, null));
         Assert.isTrue(anon.validate_expected(false, null));
@@ -45,11 +45,11 @@ class TestBasicBool extends Test {
     }
 
     function testStruct() {
-        Assert.raises(new AnonStruct().setBool().validate.bind(0));
-        Assert.raises(new AnonStruct().setBool().refuseNull().validate.bind(null));
-        Assert.raises(new AnonStruct().setBool().expectedValue(true).validate.bind(false));
-        Assert.raises(new AnonStruct().setBool().expectedValue(false).validate.bind(true));
-        Assert.raises(new AnonStruct().setBool().addValidation(
+        Assert.raises(new AnonStruct().valueBool().validate.bind(0));
+        Assert.raises(new AnonStruct().valueBool().refuseNull().validate.bind(null));
+        Assert.raises(new AnonStruct().valueBool().expectedValue(true).validate.bind(false));
+        Assert.raises(new AnonStruct().valueBool().expectedValue(false).validate.bind(true));
+        Assert.raises(new AnonStruct().valueBool().addValidation(
             function(value:Bool):Void if (value) throw "Error"
         ).validate.bind(true));
     }

@@ -21,43 +21,43 @@ class AnonStruct {
         this._validateFunc.push(func);
     }
 
-    public function setBool():AnonPropBool {
+    public function valueBool():AnonPropBool {
         var value:AnonPropBool = new AnonPropBool();
         this.currentStruct = value;
         return value;
     }
 
-    public function setString():AnonPropString {
+    public function valueString():AnonPropString {
         var value:AnonPropString = new AnonPropString();
         this.currentStruct = value;
         return value;
     }
 
-    public function setInt():AnonPropInt {
+    public function valueInt():AnonPropInt {
         var value:AnonPropInt = new AnonPropInt();
         this.currentStruct = value;
         return value;
     }
 
-    public function setFloat():AnonPropFloat {
+    public function valueFloat():AnonPropFloat {
         var value:AnonPropFloat = new AnonPropFloat();
         this.currentStruct = value;
         return value;
     }
 
-    public function setArray():AnonPropArray {
+    public function valueArray():AnonPropArray {
         var value:AnonPropArray = new AnonPropArray();
         this.currentStruct = value;
         return value;
     }
 
-    public function setDate():AnonPropDate {
+    public function valueDate():AnonPropDate {
         var value:AnonPropDate = new AnonPropDate();
         this.currentStruct = value;
         return value;
     }
 
-    public function setObject():AnonPropObject {
+    public function valueObject():AnonPropObject {
         var value:AnonPropObject = new AnonPropObject();
         this.currentStruct = value;
         return value;
@@ -68,43 +68,43 @@ class AnonStruct {
     public function allowNull():Void this._allowNull = true;
 
 
-    public function valueInt(prop:String):AnonPropInt {
+    public function propertyInt(prop:String):AnonPropInt {
         var propInt:AnonPropInt = new AnonPropInt();
         this.propMap.set(prop, propInt);
         return propInt;
     }
 
-    public function valueFloat(prop:String):AnonPropFloat {
+    public function propertyFloat(prop:String):AnonPropFloat {
         var propFloat:AnonPropFloat = new AnonPropFloat();
         this.propMap.set(prop, propFloat);
         return propFloat;
     }
 
-    public function valueString(prop:String):AnonPropString {
+    public function propertyString(prop:String):AnonPropString {
         var propString:AnonPropString = new AnonPropString();
         this.propMap.set(prop, propString);
         return propString;
     }
 
-    public function valueObject(prop:String):AnonPropObject {
+    public function propertyObject(prop:String):AnonPropObject {
         var propObject:AnonPropObject = new AnonPropObject();
         this.propMap.set(prop, propObject);
         return propObject;
     }
 
-    public function valueArray(prop:String):AnonPropArray {
+    public function propertyArray(prop:String):AnonPropArray {
         var propArray:AnonPropArray = new AnonPropArray();
         this.propMap.set(prop, propArray);
         return propArray;
     }
 
-    public function valueDate(prop:String):AnonPropDate {
+    public function propertyDate(prop:String):AnonPropDate {
         var propDate:AnonPropDate = new AnonPropDate();
         this.propMap.set(prop, propDate);
         return propDate;
     }
 
-    public function valueBool(prop:String):AnonPropBool {
+    public function propertyBool(prop:String):AnonPropBool {
         var propBool:AnonPropBool = new AnonPropBool();
         this.propMap.set(prop, propBool);
         return propBool;
@@ -116,19 +116,19 @@ class AnonStruct {
 
     private function validateTree(data:Dynamic, stopOnFirstError:Bool = false, tree:Array<String> = null) {
         if (tree == null) tree = [];
-        var errors:Array<AnonError> = [];
+        var errors:Array<AnonStructError> = [];
 
         var addDynamicError = function(e:Dynamic, possibleLabel:String, possibleKey:String):Void {
             if (Std.is(e, Array)) {
                 var erroList:Array<Dynamic> = cast e;
 
                 for (item in erroList) {
-                    if (Std.is(item, AnonError)) errors.push(item);
-                    else errors.push(new AnonError(possibleLabel, possibleKey, Std.string(e)));
+                    if (Std.is(item, AnonStructError)) errors.push(item);
+                    else errors.push(new AnonStructError(possibleLabel, possibleKey, Std.string(e)));
                 }
             } 
-            else if (Std.is(e, AnonError)) errors.push(cast e);
-            else errors.push(new AnonError(possibleLabel, possibleKey, Std.string(e)));
+            else if (Std.is(e, AnonStructError)) errors.push(cast e);
+            else errors.push(new AnonStructError(possibleLabel, possibleKey, Std.string(e)));
 
             if (stopOnFirstError) throw errors;
         }
@@ -177,17 +177,17 @@ class AnonStruct {
         try {
             this.validateAll(data, true);
         } catch (e:Dynamic) {
-            var arr:Array<AnonError> = cast e;
+            var arr:Array<AnonStructError> = cast e;
             throw e[0];
         }
     }
 
-    public function getErrors(data:Dynamic):Array<AnonError> {
+    public function getErrors(data:Dynamic):Array<AnonStructError> {
         try {
             this.validateAll(data);
             return [];
         } catch (e:Dynamic) {
-            var arr:Array<AnonError> = cast e;
+            var arr:Array<AnonStructError> = cast e;
             return arr;
         }
     }

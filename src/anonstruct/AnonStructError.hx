@@ -1,6 +1,6 @@
 package anonstruct;
 
-class AnonError {
+class AnonStructError {
 
     public var label:String;
     public var property:String;
