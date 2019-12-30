@@ -471,18 +471,36 @@ private class AnonPropObject extends AnonProp {
         return this;
     }
 
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isObject(value:Dynamic):Bool {
+        // this is the best approach??
+        if (
+            value == null ||
+            Std.is(value, String) ||
+            Std.is(value, Float) ||
+            Std.is(value, Bool) ||
+            Std.is(value, Array) ||
+            Std.is(value, Class) ||
+            Reflect.isFunction(value) 
+        ) return false;
+        
+        return true;
+    }
+
     override private function validate(value:Dynamic, ?tree:Array<String>):Void {
         if (tree == null) tree = [];
         super.validate(value, tree);
 
-        if (value == null && !this._allowNull) {
-            throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
-        } else if (value != null) {
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
 
-            if (this._struct != null) this._struct.validateTree(value, tree.copy());
+            if (!this.validate_isObject(value)) throw AnonMessages.STRING_VALUE_INVALID;
+            else {
+        
+                if (this._struct != null) this._struct.validateTree(value, tree.copy());
+                this.validateFuncs(value);
 
-            this.validateFuncs(value);
-
+            }
         }
 
     }

@@ -4,7 +4,34 @@ import utest.Assert;
 import anonstruct.AnonStruct;
 import utest.Test;
 
+@:access(anonstruct.AnonPropObject)
 class TestBasicObject extends Test {
+
+    function testIsObject() {
+        var anon = new AnonStruct().valueObject();
+        
+        Assert.isTrue(anon.validate_isObject({}));
+        Assert.isTrue(anon.validate_isObject({a:1}));
+        Assert.isTrue(anon.validate_isObject(Date.now()));
+        
+        Assert.isFalse(anon.validate_isObject(''));
+        Assert.isFalse(anon.validate_isObject(null));
+        Assert.isFalse(anon.validate_isObject([]));
+        Assert.isFalse(anon.validate_isObject(1));
+        Assert.isFalse(anon.validate_isObject(1.1));
+        Assert.isFalse(anon.validate_isObject(function() {}));
+        Assert.isFalse(anon.validate_isObject(AnonStruct));
+    }
+
+    function testAllowedNull() {
+        var anon = new AnonStruct().valueObject();
+        
+        Assert.isTrue(anon.validate_allowedNull(null, true));
+        Assert.isTrue(anon.validate_allowedNull(true, true));
+        Assert.isTrue(anon.validate_allowedNull(true, false));
+
+        Assert.isFalse(anon.validate_allowedNull(null, false));
+    }
     
     function testSimpleObject() {
         
