@@ -81,25 +81,68 @@ trace(validator.getErrors({b:10, list:[{b:10}, {b:0}]}));                  // [A
 ## AnonStruct
 
 ### valueBool():AnonPropBool
+Checks if object to be tested is a `bool` value.
+
 ### valueString():AnonPropString
+Checks if object to be tested is a `string` value.
+
 ### valueInt():AnonPropInt
+Checks if object to be tested is ai `int` value.
+
 ### valueFloat():AnonPropFloat
+Checks if object to be tested is a `float` value.
+
 ### valueArray():AnonPropArray
+Checks if object to be tested is an `array` value.
+
 ### valueDate():AnonPropDate
+Checks if object to be tested is a `date` value.
+
 ### valueObject():AnonPropObject
+Checks if object to be tested is an `object` value.
+
 ### refuseNull():Void
+The object to be tested cannot be `null`.
+
 ### allowNull():Void
+The object to be tested can be `null`.
+
 ### propertyInt(prop:String):AnonPropInt
+Checks if the object to be tested have has an `int` property named `prop`.
+
 ### propertyFloat(prop:String):AnonPropFloat
+Checks if the object to be tested have has a `float` property named `prop`.
+
 ### propertyString(prop:String):AnonPropString
+Checks if the object to be tested have has a `string` property named `prop`.
+
 ### propertyObject(prop:String):AnonPropObject
+Checks if the object to be tested have has an `object` property named `prop`.
+
 ### propertyArray(prop:String):AnonPropArray
+Checks if the object to be tested have has an `array` property named `prop`.
+
 ### propertyDate(prop:String):AnonPropDate
+Checks if the object to be tested have has a `date` property named `prop`.
+
 ### propertyBool(prop:String):AnonPropBool
+Checks if the object to be tested have has a `bool` property named `prop`.
+
 ### validateAll(data:Dynamic, stopOnFirstError:Bool = false):Void 
+Validate `data` against the rules. If `stopOnFirstError` is true, AnonStruct will stop at first error ocurrence.
+
+Throws `Array<AnonStructError>` if `data` don't meet the requirements.
+
 ### validate(data:Dynamic):Void
+Validate `data` against the rules and stops on first error.
+
+Throws `AnonStructError` if `data` don't meet the requirements.
+
 ### getErrors(data:Dynamic):Array<AnonStructError>
+Validate `data` against the rules and returns `Array<AnonStructError>`. If no errors found, returns an empty array.
+
 ### pass(data:Dynamic):Bool
+Validate `data` against the rules and returns `true` if validation succeeds, otherwise `false`.
 
 ---
 ## AnonPropDate
