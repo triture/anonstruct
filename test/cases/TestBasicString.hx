@@ -20,6 +20,8 @@ class TestBasicString extends Test {
         Assert.isFalse(anon.validate_isString({}));
         Assert.isFalse(anon.validate_isString(true));
         Assert.isFalse(anon.validate_isString(AnonStruct));
+        Assert.isFalse(anon.validate_isString(function():Void {}));
+        Assert.isFalse(anon.validate_isString(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

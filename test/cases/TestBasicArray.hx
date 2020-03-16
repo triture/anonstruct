@@ -19,6 +19,8 @@ class TestBasicArray extends Test {
         Assert.isFalse(anon.validate_isArray({}));
         Assert.isFalse(anon.validate_isArray(true));
         Assert.isFalse(anon.validate_isArray(AnonStruct));
+        Assert.isFalse(anon.validate_isArray(function():Void {}));
+        Assert.isFalse(anon.validate_isArray(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

@@ -24,6 +24,8 @@ class TestBasicDate extends Test {
         Assert.isFalse(anon.validate_isDateTime({}));
         Assert.isFalse(anon.validate_isDateTime(true));
         Assert.isFalse(anon.validate_isDateTime(AnonStruct));
+        Assert.isFalse(anon.validate_isDateTime(function():Void {}));
+        Assert.isFalse(anon.validate_isDateTime(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

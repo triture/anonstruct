@@ -63,6 +63,12 @@ class AnonStruct {
         return value;
     }
 
+    public function valueFunction():AnonPropFunction {
+        var value:AnonPropFunction = new AnonPropFunction();
+        this.currentStruct = value;
+        return value;
+    }
+
 
     public function refuseNull():Void this._allowNull = false;
     public function allowNull():Void this._allowNull = true;
@@ -108,6 +114,12 @@ class AnonStruct {
         var propBool:AnonPropBool = new AnonPropBool();
         this.propMap.set(prop, propBool);
         return propBool;
+    }
+
+    public function propertyFunction(prop:String):AnonPropFunction {
+        var propFunction:AnonPropFunction = new AnonPropFunction();
+        this.propMap.set(prop, propFunction);
+        return propFunction;
     }
 
     public function validateAll(data:Dynamic, stopOnFirstError:Bool = false):Void {
@@ -909,4 +921,48 @@ private class AnonPropBool extends AnonProp {
             }
         }
     }
+}
+
+
+private class AnonPropFunction extends AnonProp {
+
+    private var _allowNull:Bool = false;
+
+    public function addErrorLabel(label:String):AnonPropFunction {
+        this.propLabel = label;
+        return this;
+    }
+
+    public function addValidation(func:Dynamic->Void):AnonPropFunction {
+        this._validateFunc.push(func);
+        return this;
+    }
+
+    public function refuseNull():AnonPropFunction {
+        this._allowNull = false;
+        return this;
+    }
+
+    public function allowNull():AnonPropFunction {
+        this._allowNull = true;
+        return this;
+    }
+
+    inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
+    inline private function validate_isFunction(value:Dynamic):Bool return Reflect.isFunction(value);
+
+    override private function validate(value:Dynamic, ?tree:Array<String>):Void {
+        super.validate(value, tree);
+
+        if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
+        else if (value != null) {
+            if (!this.validate_isFunction(value)) throw AnonMessages.FUNCTION_VALUE_INVALID;
+            else {
+                var val:Dynamic = cast value;
+                this.validateFuncs(val);
+            }
+        }
+    }
+
+
 }

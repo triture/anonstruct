@@ -19,6 +19,8 @@ class TestBasicFloat extends Test {
         Assert.isFalse(anon.validate_isFloat({}));
         Assert.isFalse(anon.validate_isFloat(true));
         Assert.isFalse(anon.validate_isFloat(AnonStruct));
+        Assert.isFalse(anon.validate_isFloat(function():Void {}));
+        Assert.isFalse(anon.validate_isFloat(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

@@ -5,8 +5,8 @@
   "tags": [],
   "classPath": "src/",
   "description": "Structural validation for dynamic / anonymous objects at runtime.",
-  "version": "0.1.1",
-  "releasenote": "First Release. Tests and suggestions are super welcome!",
+  "version": "0.2.0",
+  "releasenote": "Structural validation at runtime: Validate functions",
   "contributors": [ "triture" ],
   "dependencies": {
     "datetime" : ""

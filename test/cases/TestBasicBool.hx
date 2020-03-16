@@ -20,6 +20,8 @@ class TestBasicBool extends Test {
         Assert.isFalse(anon.validate_isBool(1));
         Assert.isFalse(anon.validate_isBool(1.1));
         Assert.isFalse(anon.validate_isBool(AnonStruct));
+        Assert.isFalse(anon.validate_isBool(function():Void {}));
+        Assert.isFalse(anon.validate_isBool(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

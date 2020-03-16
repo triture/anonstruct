@@ -43,6 +43,8 @@ class AnonMessages {
     public static var BOOL_VALUE_EXPECTED = "Value should be ?VALUE0";
 
     public static var OBJECT_VALUE_INVALID = "Value must be an object";
+    
+    public static var FUNCTION_VALUE_INVALID = "Value must be a function";
 
     static public function setLanguage_PT_BR() {
         NULL_VALUE_NOT_ALLOWED = "O valor não pode ser nulo";
@@ -79,6 +81,7 @@ class AnonMessages {
         BOOL_VALUE_INVALID = "O valor deve ser booleano";
         BOOL_VALUE_EXPECTED = "O valor esperado era ?VALUE0";
         OBJECT_VALUE_INVALID = "O valor deve ser um objeto";
+        FUNCTION_VALUE_INVALID = "O valor deve ser uma função";
     }
 
 }

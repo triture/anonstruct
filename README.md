@@ -291,3 +291,11 @@ Validate `data` against the rules and returns `true` if validation succeeds, oth
 ### refuseNull():AnonPropBool
 ### allowNull():AnonPropBool
 
+---
+## AnonPropFunction
+
+### addErrorLabel(label:String):AnonPropFunction
+### addValidation(func:Dynamic->Void):AnonPropFunction
+### refuseNull(value:Dynamic):AnonPropFunction
+### allowNull():AnonPropFunction
+

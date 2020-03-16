@@ -19,6 +19,8 @@ class TestBasicInt extends Test {
         Assert.isFalse(anon.validate_isInt({}));
         Assert.isFalse(anon.validate_isInt(true));
         Assert.isFalse(anon.validate_isInt(AnonStruct));
+        Assert.isFalse(anon.validate_isInt(function():Void {}));
+        Assert.isFalse(anon.validate_isInt(function(data:Dynamic):Void {}));
     }
 
     function testAllowedNull() {

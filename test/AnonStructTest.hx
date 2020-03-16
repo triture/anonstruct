@@ -1,5 +1,6 @@
 package ;
 
+import cases.TestBasicFunction;
 import utest.ui.Report;
 import utest.Runner;
 import cases.TestBasicString;
@@ -23,6 +24,7 @@ class AnonStructTest {
         runner.addCase(new TestBasicBool());
         runner.addCase(new TestBasicObject());
         runner.addCase(new TestBasicArray());
+        runner.addCase(new TestBasicFunction());
 
         Report.create(runner);
         runner.run();

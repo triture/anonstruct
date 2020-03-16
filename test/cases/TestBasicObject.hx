@@ -19,7 +19,8 @@ class TestBasicObject extends Test {
         Assert.isFalse(anon.validate_isObject([]));
         Assert.isFalse(anon.validate_isObject(1));
         Assert.isFalse(anon.validate_isObject(1.1));
-        Assert.isFalse(anon.validate_isObject(function() {}));
+        Assert.isFalse(anon.validate_isObject(function():Void {}));
+        Assert.isFalse(anon.validate_isObject(function(data:Dynamic):Void {}));
         Assert.isFalse(anon.validate_isObject(AnonStruct));
     }
 
