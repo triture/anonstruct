@@ -1,8 +1,7 @@
 package ;
 
+import cases.TestBasic;
 import cases.TestBasicFunction;
-import utest.ui.Report;
-import utest.Runner;
 import cases.TestBasicString;
 import cases.TestBasicInt;
 import cases.TestBasicFloat;
@@ -10,6 +9,8 @@ import cases.TestBasicBool;
 import cases.TestBasicDate;
 import cases.TestBasicObject;
 import cases.TestBasicArray;
+import utest.ui.Report;
+import utest.Runner;
 
 class AnonStructTest {
     
@@ -17,6 +18,7 @@ class AnonStructTest {
         
         var runner = new Runner();
 
+        runner.addCase(new TestBasic());
         runner.addCase(new TestBasicDate());
         runner.addCase(new TestBasicString());
         runner.addCase(new TestBasicInt());
