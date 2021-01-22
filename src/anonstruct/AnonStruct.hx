@@ -506,7 +506,7 @@ private class AnonPropObject extends AnonProp {
         if (!this.validate_allowedNull(value, this._allowNull)) throw AnonMessages.NULL_VALUE_NOT_ALLOWED;
         else if (value != null) {
 
-            if (!this.validate_isObject(value)) throw AnonMessages.STRING_VALUE_INVALID;
+            if (!this.validate_isObject(value)) throw AnonMessages.OBJECT_VALUE_INVALID;
             else {
         
                 if (this._struct != null) this._struct.validateTree(value, tree.copy());
