@@ -131,15 +131,15 @@ class AnonStruct {
         var errors:Array<AnonStructError> = [];
 
         var addDynamicError = function(e:Dynamic, possibleLabel:String, possibleKey:String):Void {
-            if (Std.is(e, Array)) {
+            if (Std.isOfType(e, Array)) {
                 var erroList:Array<Dynamic> = cast e;
 
                 for (item in erroList) {
-                    if (Std.is(item, AnonStructError)) errors.push(item);
+                    if (Std.isOfType(item, AnonStructError)) errors.push(item);
                     else errors.push(new AnonStructError(possibleLabel, possibleKey, Std.string(e)));
                 }
             } 
-            else if (Std.is(e, AnonStructError)) errors.push(cast e);
+            else if (Std.isOfType(e, AnonStructError)) errors.push(cast e);
             else errors.push(new AnonStructError(possibleLabel, possibleKey, Std.string(e)));
 
             if (stopOnFirstError) throw errors;
@@ -298,13 +298,13 @@ private class AnonPropDate extends AnonProp {
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
     private function validate_isDateTime(value:Dynamic):Bool {
-        if (Std.is(value, Date)) return true;
-        else if (Std.is(value, String)) {
+        if (Std.isOfType(value, Date)) return true;
+        else if (Std.isOfType(value, String)) {
             try {
                 DateTime.fromString(value);
                 return true;
             } catch (e:Dynamic) {}
-        } else if (Std.is(value, Float)) {
+        } else if (Std.isOfType(value, Float)) {
             try {
                 DateTime.fromTime(value);
                 return true;
@@ -326,7 +326,7 @@ private class AnonPropDate extends AnonProp {
             if (!this.validate_isDateTime(value)) throw AnonMessages.DATE_VALUE_INVALID;
             else {
                 
-                var date:DateTime = Std.is(value, String) 
+                var date:DateTime = Std.isOfType(value, String) 
                     ? DateTime.fromString(value)
                     : DateTime.fromDate(value);
 
@@ -401,7 +401,7 @@ private class AnonPropArray extends AnonProp {
     }
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
-    inline private function validate_isArray(value:Dynamic):Bool return (Std.is(value, Array));
+    inline private function validate_isArray(value:Dynamic):Bool return (Std.isOfType(value, Array));
     inline private function validate_minLen(value:Array<Dynamic>, minLen:Null<Int>):Bool return (minLen == null || minLen < 0 || value.length >= minLen);
     inline private function validate_maxLen(value:Array<Dynamic>, maxLen:Null<Int>):Bool return (maxLen == null || maxLen < 0 || value.length <= maxLen);
     
@@ -488,11 +488,11 @@ private class AnonPropObject extends AnonProp {
         // this is the best approach??
         if (
             value == null ||
-            Std.is(value, String) ||
-            Std.is(value, Float) ||
-            Std.is(value, Bool) ||
-            Std.is(value, Array) ||
-            Std.is(value, Class) ||
+            Std.isOfType(value, String) ||
+            Std.isOfType(value, Float) ||
+            Std.isOfType(value, Bool) ||
+            Std.isOfType(value, Array) ||
+            Std.isOfType(value, Class) ||
             Reflect.isFunction(value) 
         ) return false;
         
@@ -600,7 +600,7 @@ private class AnonPropString extends AnonProp {
     }
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
-    inline private function validate_isString(value:Dynamic):Bool return (Std.is(value, String));
+    inline private function validate_isString(value:Dynamic):Bool return (Std.isOfType(value, String));
     inline private function validate_isEmpty(value:String):Bool return (StringTools.trim(value).length == 0);
     inline private function validate_allowedEmpty(value:String, allowEmpty:Null<Bool>):Bool {
         var len:Int = StringTools.trim(value).length;
@@ -736,7 +736,7 @@ private class AnonPropInt extends AnonProp {
     }
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
-    inline private function validate_isInt(value:Dynamic):Bool return (Std.is(value, Int));
+    inline private function validate_isInt(value:Dynamic):Bool return (Std.isOfType(value, Int));
     inline private function validate_min(value:Int, min:Null<Int>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
     inline private function validate_max(value:Int, max:Null<Int>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
 
@@ -829,7 +829,7 @@ private class AnonPropFloat extends AnonProp {
     }
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
-    inline private function validate_isFloat(value:Dynamic):Bool return (Std.is(value, Float));
+    inline private function validate_isFloat(value:Dynamic):Bool return (Std.isOfType(value, Float));
     inline private function validate_min(value:Float, min:Null<Float>, equal:Null<Bool>):Bool return ((min == null) || ((equal == null || !equal) && value > min) || (equal && value >= min));
     inline private function validate_max(value:Float, max:Null<Float>, equal:Null<Bool>):Bool return ((max == null) || ((equal == null || !equal) && value < max) || (equal && value <= max));
 
@@ -899,7 +899,7 @@ private class AnonPropBool extends AnonProp {
     }
 
     inline private function validate_allowedNull(value:Dynamic, allowNull:Bool):Bool return (value != null || (value == null && allowNull));
-    inline private function validate_isBool(value:Dynamic):Bool return (Std.is(value, Bool));
+    inline private function validate_isBool(value:Dynamic):Bool return (Std.isOfType(value, Bool));
     inline private function validate_expected(value:Bool, expected:Null<Bool>):Bool return ((expected == null) || (expected != null && value == expected));
 
     override private function validate(value:Dynamic, ?tree:Array<String>):Void {
