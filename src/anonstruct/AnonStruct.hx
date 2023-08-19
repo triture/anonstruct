@@ -361,6 +361,9 @@ private class AnonPropArray extends AnonProp {
     private var _allowNull:Bool = false;
     private var _childStruct:Null<AnonStruct> = null;
 
+    private var _childStructClass:Null<Class<AnonStruct>> = null;
+    private var _childStructClassParams:Null<Array<Dynamic>> = null;
+
     public function new() {
         super();
     }
@@ -382,6 +385,12 @@ private class AnonPropArray extends AnonProp {
 
     public function setStruct(structure:AnonStruct):AnonPropArray {
         this._childStruct = structure;
+        return this;
+    }
+
+    public function setStructClass(structureClass:Class<AnonStruct>, ?params:Array<Dynamic>):AnonPropArray {
+        this._childStructClass = structureClass;
+        this._childStructClassParams = params == null ? [] : params;
         return this;
     }
 
@@ -436,6 +445,16 @@ private class AnonPropArray extends AnonProp {
                         var item = val[i];
                         
                         this._childStruct.validateTree(item, tree.concat(['[$i]']));
+                    }
+
+                }
+
+                if (this._childStructClass != null) {
+
+                    for (i in 0 ... val.length) {
+                        var item = val[i];
+                        var struct = Type.createInstance(this._childStructClass, this._childStructClassParams);
+                        struct.validateTree(item, tree.concat(['[$i]']));
                     }
 
                 }
