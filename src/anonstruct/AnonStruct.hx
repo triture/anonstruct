@@ -473,6 +473,9 @@ private class AnonPropObject extends AnonProp {
     private var _allowNull:Bool = false;
     private var _struct:Null<AnonStruct> = null;
 
+    private var _childStructClass:Null<Class<AnonStruct>> = null;
+    private var _childStructClassParams:Null<Array<Dynamic>> = null;
+
     public function new() {
         super();
     }
@@ -499,6 +502,12 @@ private class AnonPropObject extends AnonProp {
 
     public function setStruct(structure:AnonStruct):AnonPropObject {
         this._struct = structure;
+        return this;
+    }
+
+    public function setStructClass(structureClass:Class<AnonStruct>, ?params:Array<Dynamic>):AnonPropObject {
+        this._childStructClass = structureClass;
+        this._childStructClassParams = params == null ? [] : params;
         return this;
     }
 
@@ -529,6 +538,12 @@ private class AnonPropObject extends AnonProp {
             else {
         
                 if (this._struct != null) this._struct.validateTree(value, tree.copy());
+
+                if (this._childStructClass != null) {
+                    var struct = Type.createInstance(this._childStructClass, this._childStructClassParams);
+                    struct.validateTree(value, tree.copy());
+                }
+
                 this.validateFuncs(value);
 
             }
